@@ -130,14 +130,23 @@ def villain_play(hand, aggression): # make a tunable aggression parameter based 
             return {'action': 'fold', 'size': 0, 'percentile': percentile, 'rank': rank}
         
 class Poker: 
-    def __init__(self, bigblind = 10, aggression=0.5, starting_stack = 1000):
+    def __init__(self, bigblind = 10, aggression=0.5, starting_stack = 1000, ante_rate = 0.1):
         self.deck = Deck()
         self.stack = starting_stack
         self.bigblind = bigblind
         self.aggression = aggression
+        self.ante_rate = ante_rate
         self.history = []
     
     def play_hand(self):
+        # added ante to create pressure. without pressure it's never busting 
+        ante = self.bigblind * self.ante_rate
+        self.stack -= ante
+        
+        if self.stack <= 0:
+            return -ante
+        
+        # start
         deck = Deck()
         player_hand = deck.deal(2)
         villain_hand = deck.deal(2)
